@@ -7,6 +7,9 @@
   packages = [
     pkgs.nodejs_22
     pkgs.python3
+    pkgs.android-tools
+    pkgs.javacc
+    pkgs.snake4
   ];
   # Sets environment variables in the workspace
   env = {};
@@ -15,6 +18,9 @@
     extensions = [
       # "vscodevim.vim"
       "google.gemini-cli-vscode-ide-companion"
+      "usernamehw.errorlens@3.26.0"
+      "ms-vscode.js-debug@1.112.0"
+      "huytd.tokyo-city@0.2.4"
     ];
     # Enable previews and customize configuration
     previews = {
