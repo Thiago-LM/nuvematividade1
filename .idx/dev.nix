@@ -27,7 +27,7 @@
       enable = true;
       previews = {
         web = {
-          command = ["python3" "-m" "http.server" "$PORT" "--bind" "0.0.0.0"];
+          command = ["python3" "-m" "http.server" "$PORT" "--bind" "0.0.0.0" "--directory" "frontend"];
           manager = "web";
         };
       };
@@ -37,14 +37,14 @@
       # Runs when a workspace is first created
       onCreate = {
         # Example: install JS dependencies from NPM
-        # npm-install = "npm install";
+        npm-install = "npm install --prefix backend";
         # Open editors for the following files by default, if they exist:
-        default.openFiles = [ "style.css" "main.js" "index.html" ];
+        default.openFiles = [ "frontend/style.css" "frontend/main.js" "frontend/index.html" "backend/index.js" ];
       };
       # Runs when the workspace is (re)started
       onStart = {
-        # Example: start a background task to watch and re-build backend code
-        # watch-backend = "npm run watch-backend";
+        # Start a background task for the backend API
+        start-backend = "npm install --prefix backend && node backend/index.js";
       };
     };
   };
