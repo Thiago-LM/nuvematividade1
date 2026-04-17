@@ -1,0 +1,23 @@
+{
+  "name": "nuvematividade1-backend",
+  "version": "1.0.0",
+  "description": "Servidor backend do jogo de cobra feito na atividade 1 de Nuvem.",
+  "keywords": [
+    "node"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "nuvematividade1-backend"
+  },
+  "license": "ISC",
+  "author": "0dawara",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.2.1"
+  }
+}

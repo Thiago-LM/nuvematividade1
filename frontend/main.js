@@ -1,5 +1,15 @@
 const gameBoard = document.getElementById('game-board');
 const scoreElement = document.getElementById('score');
+const leaderboardList = document.getElementById('leaderboard-list');
+
+// Modal Elements
+const gameOverModal = document.getElementById('game-over-modal');
+const finalScoreElement = document.getElementById('final-score');
+const nicknameInput = document.getElementById('nickname');
+const submitScoreBtn = document.getElementById('submit-score-btn');
+const restartBtn = document.getElementById('restart-btn');
+
+const API_URL = 'http://localhost:3000/scores';
 
 const gridSize = 20;
 let snake = [{ x: 10, y: 10 }];
@@ -8,6 +18,94 @@ let direction = 'right';
 let score = 0;
 let gameOver = false;
 let gameLoopInterval;
+
+// --- API FUNCTIONS ---
+
+async function fetchLeaderboard() {
+    try {
+        const response = await fetch(API_URL);
+        if (!response.ok) throw new Error('Network response was not ok');
+        const scores = await response.json();
+        renderLeaderboard(scores);
+    } catch (error) {
+        console.error('Error fetching leaderboard:', error);
+        leaderboardList.innerHTML = '<li>Error loading scores</li>';
+    }
+}
+
+async function submitScore(nickname, finalScore) {
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ nickname, score: finalScore }),
+        });
+        if (!response.ok) throw new Error('Network response was not ok');
+        await fetchLeaderboard();
+    } catch (error) {
+        console.error('Error submitting score:', error);
+    }
+}
+
+function renderLeaderboard(scores) {
+    if (scores.length === 0) {
+        leaderboardList.innerHTML = '<li>No scores yet!</li>';
+        return;
+    }
+    
+    leaderboardList.innerHTML = '';
+    scores.forEach((s, index) => {
+        const li = document.createElement('li');
+        
+        const nameSpan = document.createElement('span');
+        nameSpan.className = 'leaderboard-name';
+        nameSpan.textContent = `${index + 1}. ${s.nickname}`;
+        
+        const scoreSpan = document.createElement('span');
+        scoreSpan.className = 'leaderboard-score';
+        scoreSpan.textContent = s.score;
+        
+        li.appendChild(nameSpan);
+        li.appendChild(scoreSpan);
+        leaderboardList.appendChild(li);
+    });
+}
+
+// --- MODAL LOGIC ---
+
+function showGameOverModal() {
+    finalScoreElement.textContent = score;
+    gameOverModal.classList.remove('hidden');
+    nicknameInput.focus();
+}
+
+function hideModal() {
+    gameOverModal.classList.add('hidden');
+    nicknameInput.value = '';
+}
+
+submitScoreBtn.addEventListener('click', async () => {
+    const nickname = nicknameInput.value.trim();
+    if (nickname) {
+        submitScoreBtn.disabled = true;
+        await submitScore(nickname, score);
+        submitScoreBtn.disabled = false;
+        hideModal();
+        startGame();
+    } else {
+        alert('Please enter a nickname!');
+        nicknameInput.focus();
+    }
+});
+
+restartBtn.addEventListener('click', () => {
+    hideModal();
+    startGame();
+});
+
+// --- GAME LOGIC ---
 
 function draw() {
     gameBoard.innerHTML = '';
@@ -129,7 +227,10 @@ function startGame() {
     score = 0;
     scoreElement.textContent = score;
     gameOver = false;
+    hideModal();
     generateFood();
+    
+    if (gameLoopInterval) clearInterval(gameLoopInterval);
     gameLoopInterval = setInterval(update, 200);
     document.addEventListener('keydown', handleKeyPress);
 }
@@ -137,7 +238,11 @@ function startGame() {
 function endGame() {
     gameOver = true;
     clearInterval(gameLoopInterval);
-    alert(`Game Over! Your score: ${score}`);
+    document.removeEventListener('keydown', handleKeyPress);
+    showGameOverModal();
 }
 
+// Initial fetch and start
+fetchLeaderboard();
 startGame();
+
