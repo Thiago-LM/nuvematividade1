@@ -27,3 +27,8 @@ A modern web application featuring a classic snake game with a persistent global
 2.  ~~**Implement Backend**~~: Add reading/writing endpoints to `backend/index.js` over `scores.json`.
 3.  ~~**Update Frontend Elements**~~: Refactor `index.html` and `style.css` matching modern design requirements (clean typography, glowing elements).
 4.  ~~**Update Game Logic**~~: Ensure game ends smoothly into a form modal instead of `alert()`, posting the score correctly to the backend upon validation.
+5.  ~~**Update Duplicate Logic**~~: In `backend/index.js`, update the `POST /scores` endpoint to identify matching nicknames and keep their highest score rather than creating multiple entries.
+6.  ~~**Delete Score Functionality**~~: Add a `🗑️` button to each score row in the frontend connected to a `DELETE /scores/:id` request to handle score removal natively inside the ui.
+7.  ~~**Start Screen UI**~~: Add an initial **Start Game** overlay to wait for user interaction before running the game loop.
+8.  ~~**Menu Return**~~: Modified game-over behavior to return gracefully to the idle "Start Game" overlay (menu) instead of forcibly instantly loading into another game automatically.
+9.  ~~**Environment Architecture**~~: Updated `.idx/dev.nix` configurations and GitHub Actions `static.yml` to automatically execute bindings targeting our decoupled `/frontend` and `/backend` directories natively.
