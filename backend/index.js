@@ -37,19 +37,28 @@ app.post('/scores', (req, res) => {
     }
     
     const scores = readScores();
-    const newScore = {
-        id: Date.now().toString(),
-        nickname,
-        score,
-        timestamp: new Date().toISOString()
-    };
+    const existingIndex = scores.findIndex(s => s.nickname === nickname);
     
-    scores.push(newScore);
-    // Optionally sort by score descending
+    let scoreObj;
+    if (existingIndex !== -1) {
+        scores[existingIndex].score = Math.max(scores[existingIndex].score, score);
+        scores[existingIndex].timestamp = new Date().toISOString();
+        scoreObj = scores[existingIndex];
+    } else {
+        scoreObj = {
+            id: Date.now().toString(),
+            nickname,
+            score,
+            timestamp: new Date().toISOString()
+        };
+        scores.push(scoreObj);
+    }
+
+    // Sort by score descending
     scores.sort((a, b) => b.score - a.score);
     
     writeScores(scores);
-    res.status(201).json(newScore);
+    res.status(201).json(scoreObj);
 });
 
 // READ scores (Top 10)
