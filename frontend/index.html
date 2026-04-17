@@ -18,7 +18,12 @@
                 <div id="score-container">
                     <h2>Score: <span id="score">0</span></h2>
                 </div>
-                <div id="game-board"></div>
+                <div style="position: relative; overflow: hidden; border-radius: var(--radius-md);">
+                    <div id="start-screen" class="start-screen-overlay">
+                        <button id="start-game-btn">▶ Start Game</button>
+                    </div>
+                    <div id="game-board"></div>
+                </div>
             </div>
             
             <aside id="leaderboard-container">
@@ -40,8 +45,8 @@
                 <input type="text" id="nickname" placeholder="e.g. SnakeKing99" autocomplete="off" maxlength="15">
             </div>
             <div class="button-group">
-                <button id="submit-score-btn">Submit Score & Play Again</button>
-                <button id="restart-btn" class="secondary-btn">Play Again (No Save)</button>
+                <button id="submit-score-btn">Submit Score & Menu</button>
+                <button id="restart-btn" class="secondary-btn">Return to Menu (No Save)</button>
             </div>
         </div>
     </div>

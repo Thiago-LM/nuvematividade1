@@ -9,6 +9,10 @@ const nicknameInput = document.getElementById('nickname');
 const submitScoreBtn = document.getElementById('submit-score-btn');
 const restartBtn = document.getElementById('restart-btn');
 
+// Start Screen Elements
+const startScreen = document.getElementById('start-screen');
+const startGameBtn = document.getElementById('start-game-btn');
+
 const API_URL = 'http://localhost:3000/scores';
 
 const gridSize = 20;
@@ -49,6 +53,19 @@ async function submitScore(nickname, finalScore) {
     }
 }
 
+async function deleteScore(id) {
+    if (!confirm('Are you sure you want to delete this score?')) return;
+    try {
+        const response = await fetch(`${API_URL}/${id}`, {
+            method: 'DELETE'
+        });
+        if (!response.ok) throw new Error('Network response was not ok');
+        await fetchLeaderboard();
+    } catch (error) {
+        console.error('Error deleting score:', error);
+    }
+}
+
 function renderLeaderboard(scores) {
     if (scores.length === 0) {
         leaderboardList.innerHTML = '<li>No scores yet!</li>';
@@ -63,12 +80,24 @@ function renderLeaderboard(scores) {
         nameSpan.className = 'leaderboard-name';
         nameSpan.textContent = `${index + 1}. ${s.nickname}`;
         
+        const rightContainer = document.createElement('div');
+        rightContainer.className = 'leaderboard-right';
+
         const scoreSpan = document.createElement('span');
         scoreSpan.className = 'leaderboard-score';
         scoreSpan.textContent = s.score;
         
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'delete-btn';
+        deleteBtn.innerHTML = '🗑️';
+        deleteBtn.title = 'Delete Score';
+        deleteBtn.onclick = () => deleteScore(s.id);
+        
+        rightContainer.appendChild(scoreSpan);
+        rightContainer.appendChild(deleteBtn);
+
         li.appendChild(nameSpan);
-        li.appendChild(scoreSpan);
+        li.appendChild(rightContainer);
         leaderboardList.appendChild(li);
     });
 }
@@ -92,8 +121,7 @@ submitScoreBtn.addEventListener('click', async () => {
         submitScoreBtn.disabled = true;
         await submitScore(nickname, score);
         submitScoreBtn.disabled = false;
-        hideModal();
-        startGame();
+        resetToMainScreen();
     } else {
         alert('Please enter a nickname!');
         nicknameInput.focus();
@@ -101,9 +129,16 @@ submitScoreBtn.addEventListener('click', async () => {
 });
 
 restartBtn.addEventListener('click', () => {
-    hideModal();
-    startGame();
+    resetToMainScreen();
 });
+
+function resetToMainScreen() {
+    hideModal();
+    gameBoard.innerHTML = '';
+    score = 0;
+    scoreElement.textContent = score;
+    startScreen.classList.remove('hidden');
+}
 
 // --- GAME LOGIC ---
 
@@ -242,7 +277,14 @@ function endGame() {
     showGameOverModal();
 }
 
-// Initial fetch and start
+// --- START / INIT LOGIC ---
+
+startGameBtn.addEventListener('click', () => {
+    startScreen.classList.add('hidden');
+    startGame();
+});
+
+// Initial fetch and setup
 fetchLeaderboard();
-startGame();
+// Do not start game immediately, wait for user to click Start
 
